@@ -16,16 +16,17 @@ int main(int argc, char **argv)
     xsConsole() << "Starting Serious Sam Manager Server Daemon on port " + QString::number(MANAGER_PORT) << endl;
     daemon->startServer("new.crt", "new.key");
     do {
-        daemon->server->Write(QString("(" + QString::number(daemon->pw->getMaxHit()) + "/" + QString::number(daemon->pw->getHit()) +  ") Enter your password -> ").toUtf8());
-        buffer = daemon->format((daemon->server->Read()));
-    } while(daemon->login(buffer, SAM_PORT) != OK);
+        daemon->serverWrite("(" + QString::number(daemon->pw->getHit()) + "/" + QString::number(daemon->pw->getMaxHit()) +  ") Enter your password -> ");
+        buffer = daemon->serverRead();
+    } while(!daemon->login(buffer, SAM_PORT));
     xsConsole() << "Logged and connected to 127.0.0.1\n";
 
     while(buffer.compare("quit",Qt::CaseInsensitive) != 0)
     {
-        buffer = daemon->format(daemon->server->Read());
-        daemon->sam->WriteStream(buffer);
+        buffer = daemon->serverRead();
+        daemon->serverWrite(buffer);
     }
+    //TODO: REPEAT FOR NEXT CONNECTION
     daemon->server->Disconnect();
     daemon->sam->Close();
     //TODO: CLOSE ALL
