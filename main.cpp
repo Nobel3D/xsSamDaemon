@@ -21,10 +21,13 @@ int main(int argc, char **argv)
     } while(!daemon->login(buffer, SAM_PORT));
     xsConsole() << "Logged and connected to 127.0.0.1\n";
 
+    daemon->start();
+
     while(buffer.compare("quit",Qt::CaseInsensitive) != 0)
     {
         buffer = daemon->serverRead();
-        daemon->serverWrite(buffer);
+        xsConsole() << "> " << buffer << endl;
+        daemon->samWrite(buffer);
     }
     //TODO: REPEAT FOR NEXT CONNECTION
     daemon->server->Disconnect();
